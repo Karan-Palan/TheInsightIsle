@@ -1,7 +1,7 @@
 import Header from "./Header";
 import {Outlet} from "react-router-dom";
 
-// This is the layout of the entier website
+//Layout of entire website
 export default function Layout() {
   return (
     <main>

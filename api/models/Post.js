@@ -11,6 +11,7 @@ const PostSchema = new Schema({
   timestamps: true, // We will know when a post has been created 
 });
 
+
 const PostModel = model('Post', PostSchema);
 
 module.exports = PostModel;

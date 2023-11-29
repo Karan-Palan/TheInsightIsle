@@ -13,7 +13,7 @@ const fs = require('fs');
 
 //Using bycrypt for authentication 
 const salt = bcrypt.genSaltSync(10);
-const secret = 'fjb3bhkw3bifbwb3owfbsjfbks';
+const secret = 'fakjsh3h8h9w802bfkhf';
 
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 // Was getting a cors error hence added cors and used credentials true
@@ -40,14 +40,14 @@ app.post('/register', async (req,res) => {
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const userDoc = await User.findOne({ username }); //Goes through all the usernames in the database finds username typed
+  const userDoc = await User.findOne({username}); //Goes through all the usernames in the database finds username typed
   const passOk = bcrypt.compareSync(password, userDoc.password);//Converts the password type into a hash and compares hashes
   if (passOk) {
     // logged in
-    jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
+    jwt.sign({username,id:userDoc._id}, secret, {}, (err,token) => {
       if (err) throw err;
       res.cookie('token', token).json({
-        id: userDoc._id,
+        id:userDoc._id,
         username,
       });
     });
@@ -56,9 +56,9 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/profile', (req, res) => {
-  const { token } = req.cookies;
-  jwt.verify(token, secret, {}, (err, info) => {
+app.get('/profile', (req,res) => {
+  const {token} = req.cookies;
+  jwt.verify(token, secret, {}, (err,info) => {
     if (err) throw err;
     res.json(info);
   });
@@ -68,11 +68,11 @@ app.post('/logout', (req, res) => {
   res.cookie('token', '').json('ok');
 });
 
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-  const { originalname, path } = req.file;
+app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
+  const {originalname,path} = req.file;
   const parts = originalname.split('.');
   const ext = parts[parts.length - 1]; //Grabbing the last part
-  const newPath = path + '.' + ext; //Original filename with the extension
+  const newPath = path+'.'+ext; //Original filename with the extension
   fs.renameSync(path, newPath);
 
   const {token} = req.cookies;
@@ -86,37 +86,6 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
       cover:newPath,
       author:info.id,
     });
-    res.json(postDoc);
-  });
-
-});
-
-app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
-  let newPath = null;
-  if (req.file) {
-    const {originalname,path} = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    newPath = path+'.'+ext;
-    fs.renameSync(path, newPath);
-  }
-
-  const {token} = req.cookies;
-  jwt.verify(token, secret, {}, async (err,info) => {
-    if (err) throw err;
-    const {id,title,summary,content} = req.body;
-    const postDoc = await Post.findById(id);
-    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-    if (!isAuthor) {
-      return res.status(400).json('you are not the author');
-    }
-    await postDoc.update({
-      title,
-      summary,
-      content,
-      cover: newPath ? newPath : postDoc.cover,
-    });
-
     res.json(postDoc);
   });
 

@@ -21,7 +21,7 @@ export default function LoginPage() {
         setRedirect(true); //Redirects to create post page
       });
     } else {
-      alert('wrong credentials, please check again');
+      alert('wrong credentials');
     }
   }
 
