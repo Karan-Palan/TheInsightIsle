@@ -4,7 +4,6 @@ import {useState} from "react";
 import {Navigate} from "react-router-dom";
 import Editor from "../Editor";
 
-
 export default function CreatePost() {
   const [title,setTitle] = useState('');
   const [summary,setSummary] = useState('');
@@ -16,12 +15,12 @@ export default function CreatePost() {
     data.set('title', title);
     data.set('summary', summary);
     data.set('content', content);
-    data.set("file", files[0]); // To pick only one image even if user selects multiple images
+    data.set('file', files[0]); // Only 1 file will be selected
     ev.preventDefault();
-    const response = await fetch("http://localhost:4000/post", {
-      method: "POST",
+    const response = await fetch('http://localhost:4000/post', {
+      method: 'POST',
       body: data,
-      credentials: "include", //send a cookie
+      credentials: 'include', 
     });
     if (response.ok) {
       setRedirect(true);
